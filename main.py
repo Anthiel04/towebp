@@ -1,21 +1,42 @@
 import sys
 import time
 import convert
+import argparse
 
 
 def main():
-    # Verifica si se ha proporcionado un argumento
-    if len(sys.argv) < 2:
-        print("Uso: python main.py <path>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Convert SVG to WebP")
 
-    # Obtiene el path del archivo desde los argumentos
-    file_path = sys.argv[1]
+    parser.add_argument("file_path", help="Path to the input SVG file")
+    parser.add_argument("--res", help="Output resolution as WIDTH,HEIGHT (e.g. 800,600)", default=None)
+    parser.add_argument("--quality", help="Quality for output WebP (0-100)", type=int, default=85)
+
+    args = parser.parse_args()
+
+    output_size = None
+    if args.res:
+        try:
+            width, height = map(int, args.res.split(","))
+            output_size = (width, height)
+        except ValueError:
+            parser.error("Resolution must be in the format WIDTH,HEIGHT where both are integers")
+
+    quality = args.quality
+
+    file_path = args.file_path
+    opts = {
+        "file_path": args.file_path,
+        "output_size": output_size,
+        "quality": quality,
+    }
+    print(opts)
+    
     start = time.time()
-
-    # Intenta abrir y leer el archivo
     try:
-        convert.convert_to_webp(file_path)
+        if file_path.lower().endswith(".svg"):
+            convert.svg_to_webp(**opts)
+        else:
+            convert.convert_to_webp(**opts)
         elapsed = time.time()
         print(f"El archivo {file_path} ha sido convertido a WebP.")
         print(f"Done in {start - elapsed} seconds")
