@@ -39,7 +39,7 @@ def main():
             convert.convert_to_webp(**opts)
         elapsed = time.time()
         print(f"El archivo {file_path} ha sido convertido a WebP.")
-        print(f"Done in {start - elapsed} seconds")
+        print(f"Done in {elapsed - start} seconds")
 
     except FileNotFoundError:
         print(f"El archivo {file_path} no fue encontrado.")
